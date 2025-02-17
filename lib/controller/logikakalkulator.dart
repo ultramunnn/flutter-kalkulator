@@ -11,8 +11,24 @@ class KalkulatorController {
   void addInput(String value) {
     if (_isNewCalculation) {
       _input = '';
-      _result = ''; // Reset hasil juga
+      _result = '';
       _isNewCalculation = false;
+    }
+
+    if (_input.isEmpty) {
+      if (value == '-' || value == '(') {
+        _input = value; // Izinkan "-" atau "(" di awal input
+        return;
+      }
+    } else {
+      String lastChar = _input[_input.length - 1];
+
+      // Cegah operator lain selain '-' atau '(' di awal input
+      if (_input.length == 1 && isOperator(lastChar)) {
+        return;
+      }
+
+      // Tambahkan input jika valid
     }
     _input += value;
   }
@@ -31,7 +47,6 @@ class KalkulatorController {
 
   void calculate() {
     try {
-      // Hapus replaceAll yang tidak diperlukan
       String expression = _input
           .replaceAll('x', '*') // Ganti x dengan *
           .replaceAll(',', '.'); // Ganti koma dengan titik untuk desimal
@@ -50,5 +65,27 @@ class KalkulatorController {
 
   String _removeDecimalZero(String value) {
     return value.replaceAll(RegExp(r'\.0$'), '');
+  }
+
+  bool isOperator(String char) {
+    return ['+', '-', 'x', '/', '(', ')'].contains(char);
+  }
+
+  void replaceLastOperator(String newOperator) {
+    if (_input.isNotEmpty && isOperator(_input[_input.length - 1])) {
+      _input = _input.substring(0, _input.length - 1) + newOperator;
+    }
+  }
+
+  void handleOperatorInput(String text) {
+    if (_input.isEmpty) return; // Mencegah operator di awal input
+
+    String lastChar = _input[_input.length - 1];
+
+    if (!isOperator(lastChar)) {
+      addInput(text); // Tambahkan operator jika sebelumnya bukan operator
+    } else {
+      replaceLastOperator(text); // Ganti operator terakhir jika sudah ada
+    }
   }
 }

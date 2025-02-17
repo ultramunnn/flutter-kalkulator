@@ -153,7 +153,7 @@ class _ScreenKalkulatorState extends State<ScreenKalkulator> {
       child: ElevatedButton(
         onPressed: () {
           setState(() {
-            _controller.addInput(text);
+            _controller.handleOperatorInput(text);
           });
         },
         style: ElevatedButton.styleFrom(
